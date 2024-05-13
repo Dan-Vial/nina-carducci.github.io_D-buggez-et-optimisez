@@ -37,6 +37,10 @@ async function execAllPreload() {
     }
 
     while (allScriptPreload.length > 0) {
+        let integrity = typeof allScriptPreload[0].integrity !== 'undefined' ? `integrity="${allScriptPreload[0].integrity}"` : '';
+        let crossorigin = typeof allScriptPreload[0].crossorigin !== 'undefined' ? `crossorigin="${allScriptPreload[0].crossorigin}"` : '';
+
+        // `<script src="${allScriptPreload[0].href}" ${integrity} ${crossorigin} defer></script>`;
         let script = range.createContextualFragment(`
             <script src="${allScriptPreload[0].href}" defer></script>
         `);
