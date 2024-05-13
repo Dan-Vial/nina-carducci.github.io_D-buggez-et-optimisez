@@ -24,17 +24,8 @@ async function execAllPreload() {
     let allCssPreload = document.querySelectorAll('link[rel="preload"][as="style"]');
     let allScriptPreload = document.querySelectorAll('link[rel="preload"][as="script"]');
 
-    while (allFontPreload.length > 0) {
-        allFontPreload[0].rel = 'stylesheet';
-        delete allFontPreload[0].as;
-        allFontPreload = document.querySelectorAll('link[rel="preload"][as="font"]');
-    }
-
-    while (allCssPreload.length > 0) {
-        allCssPreload[0].rel = 'stylesheet';
-        delete allCssPreload[0].as;
-        allCssPreload = document.querySelectorAll('link[rel="preload"][as="style"]');
-    }
+    execLink(allFontPreload, 'link[rel="preload"][as="font"]');
+    execLink(allCssPreload, 'link[rel="preload"][as="style"]');
 
     while (allScriptPreload.length > 0) {
         let integrity = typeof allScriptPreload[0].integrity !== 'undefined' ? `integrity="${allScriptPreload[0].integrity}"` : '';
@@ -49,17 +40,18 @@ async function execAllPreload() {
 
         allScriptPreload = document.querySelectorAll('link[rel="preload"][as="script"]');
 
-        let started = true;
-        var ended = true;
-        while (ended) {
-            if (started) {
-                started = false;
-                ended = await new Promise((resolve) => {
-                    document.head.lastElementChild.addEventListener('load', event => {
-                        resolve(false);
-                    });
-                });
-            }
+        await new Promise((resolve) => {
+            document.head.lastElementChild.addEventListener('load', event => {
+                resolve();
+            });
+        });
+    }
+
+    function execLink(arr, selector) {
+        while (arr.length > 0) {
+            arr[0].rel = 'stylesheet';
+            delete arr[0].as;
+            arr = document.querySelectorAll(selector);
         }
     }
 }
